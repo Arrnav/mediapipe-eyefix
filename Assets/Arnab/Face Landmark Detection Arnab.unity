@@ -1406,7 +1406,7 @@ MonoBehaviour:
   leftEyeBone: {fileID: 7239528559178966543}
   rightEyeBone: {fileID: 5305259353775361222}
   leftEyeAngleRangeInOut: ddffffff23000000
-  leftEyeYAngleOffset: 5
+  leftEyeYAngleOffset: 1.9
   rightEyeAngleRangeInOut: ddffffff23000000
   rightEyeYAngleOffset: -5
   bothEyeAngleRangeUpDown: f1ffffff07000000

@@ -157,8 +157,8 @@ public class IrisTracker : MonoBehaviour
             leftEyeData.OuterMost, rightEyeData.OuterMost);
         
         // First we calculate in-out (Y-axis) rotation euler angles for both eyes.
-        var leftRotation = CalculateInOutEyeRotation(leftEyeData, leftEyeYAngleOffset, -1, verticalTiltFactor, horizontalTiltFactor);
-        var rightRotation = CalculateInOutEyeRotation(rightEyeData, rightEyeYAngleOffset, 1, verticalTiltFactor, horizontalTiltFactor);
+        var leftRotation = CalculateInOutEyeRotation(leftEyeData, leftEyeYAngleOffset, -1, horizontalTiltFactor);
+        var rightRotation = CalculateInOutEyeRotation(rightEyeData, rightEyeYAngleOffset, 1, horizontalTiltFactor);
 
         // Then we calculate up-down (X-axis) rotation euler angles for both eyes.
         var upDownAngle = GetIrisBasedAngle(rightEyeData.IrisCenter, 
@@ -168,9 +168,12 @@ public class IrisTracker : MonoBehaviour
         // Finally we combine calculated local euler angles for both X and Y axes and smoothly apply rotations to both eyes.
         Utilities.ApplyClampedSmoothRotation(leftEyeBone, new Vector3(upDownAngle, leftRotation.y, 0),
             bothEyeAngleRangeUpDown, leftEyeAngleRangeInOut);
-        
-        Utilities.ApplyClampedSmoothRotation(rightEyeBone, new Vector3(upDownAngle, rightRotation.y, 0),
-            bothEyeAngleRangeUpDown, rightEyeAngleRangeInOut);
+
+        // To prevent differences, apply left eye rotation to right eye rotation.
+        rightEyeBone.localRotation = leftEyeBone.localRotation;
+
+        // Utilities.ApplyClampedSmoothRotation(rightEyeBone, new Vector3(upDownAngle, rightRotation.y, 0),
+        //     bothEyeAngleRangeUpDown, rightEyeAngleRangeInOut);
     }
 
     /// <summary>
@@ -179,11 +182,10 @@ public class IrisTracker : MonoBehaviour
     /// <param name="eyeData">Input eye data struct.</param>
     /// <param name="yAngleOffset">Input Y-axis rotation angle offset.</param>
     /// <param name="dirSign">Input direction sign for angle.</param>
-    /// <param name="verticalTiltFactor">Vertical head tile factor.</param>
     /// <param name="horizontalTiltFactor">Horizontal head tile factor.</param>
     /// <returns>Returns in-out eyeball rotation angle (Y-axis rotation) for input eye.</returns>
     private Vector3 CalculateInOutEyeRotation(DataStructures.EyeData eyeData, float yAngleOffset, float dirSign,
-        float verticalTiltFactor, float horizontalTiltFactor)
+        float horizontalTiltFactor)
     {
         var inOutAngle = GetIrisBasedAngle(eyeData.IrisCenter, eyeData.InnerMost,
             eyeData.OuterMost, dirSign, angleMultiplierInOut, horizontalTiltFactor);
